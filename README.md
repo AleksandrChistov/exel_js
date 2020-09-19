@@ -1,2 +1,2 @@
-# exell_project
+# exel_js
 Javascript project
