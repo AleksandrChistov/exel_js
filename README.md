@@ -1,2 +1,2 @@
-# exel_js
-Javascript project
+# excel_js
+Pure Javascript Excel Application
