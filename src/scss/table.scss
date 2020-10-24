@@ -25,6 +25,7 @@
       border: 1px solid $border-color;
       background: #f8f9fa;
       border-top: none;
+      user-select: none;
     }
 
     &__data {
@@ -59,6 +60,7 @@
     border: 1px solid $border-color;
     border-top: 0;
     border-left: 0;
+    user-select: none;
 
     &__resize {
       position: absolute;
