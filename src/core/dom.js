@@ -13,6 +13,17 @@ class Dom {
     return this.$el.outerHTML.trim();
   }
 
+  text(text) {
+    if (typeof text === 'string') {
+      this.$el.textContent = text;
+      return this;
+    }
+    if (this.$el.tagName === 'INPUT') {
+      return this.$el.value.trim();
+    }
+    return this.$el.textContent.trim();
+  }
+
   clear() {
     this.html('');
     return this;
@@ -44,16 +55,46 @@ class Dom {
     return this.$el.dataset;
   }
 
-  closest(selector) {
-    return $(this.$el.closest(selector));
+  focus() {
+    this.$el.focus();
+    return this;
+  }
+
+  id(parse) {
+    if (parse) {
+      const id = this.data.id.split(':');
+      return {
+        row: +id[0],
+        col: +id[1]
+      };
+    }
+    return this.data.id;
   }
 
   getCoords() {
     return this.$el.getBoundingClientRect();
   }
 
+  closest(selector) {
+    return $(this.$el.closest(selector));
+  }
+
+  find(selector) {
+    return $(this.$el.querySelector(selector));
+  }
+
   findAll(selector) {
     return this.$el.querySelectorAll(selector);
+  }
+
+  addClass(className) {
+    this.$el.classList.add(className);
+    return this;
+  }
+
+  removeClass(className) {
+    this.$el.classList.remove(className);
+    return this;
   }
 
   css(styles = {}) {
