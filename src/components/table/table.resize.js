@@ -1,50 +1,57 @@
 import {$} from '@core/dom';
 
 export function resizeHandler($root, event) {
-  const resizeType = event.target.dataset.resize;
-  const $resizer = $(event.target);
-  const $parent = $resizer.closest('[data-type="resizable"]');
-  const tableHeight = $root.$el.offsetHeight - 16;
-  const tableWidth = $root.$el.offsetWidth;
-  const colNumber = $parent.data.col;
-  const $cells = $root.findAll(`[data-col='${colNumber}']`);
-  const coords = $parent.getCoords();
+  return new Promise(resolve => {
+    const resizeType = event.target.dataset.resize;
+    const $resizer = $(event.target);
+    const $parent = $resizer.closest('[data-type="resizable"]');
+    const $cells = $root.findAll(`[data-col='${$parent.data.col}']`);
+    const tableHeight = $root.$el.offsetHeight - 16;
+    const tableWidth = $root.$el.offsetWidth;
+    const coords = $parent.getCoords();
+    let value = 0;
 
-  document.onmousemove = e => {
-    if (resizeType === 'col') {
-      const deltaX = e.clientX - coords.right;
-      $resizer.css({
-        right: `${-deltaX}px`,
-        height: `${tableHeight}px`,
-        opacity: '1'
-      });
-    } else {
-      const deltaY = e.clientY - coords.bottom;
-      $resizer.css({
-        bottom: `${-deltaY}px`,
-        width: `${tableWidth}px`,
-        opacity: '1'
-      });
-    }
-  };
+    document.onmousemove = e => {
+      if (resizeType === 'col') {
+        const deltaX = e.clientX - coords.right;
+        $resizer.css({
+          right: `${-deltaX}px`,
+          height: `${tableHeight}px`,
+          opacity: '1'
+        });
+      } else {
+        const deltaY = e.clientY - coords.bottom;
+        $resizer.css({
+          bottom: `${-deltaY}px`,
+          width: `${tableWidth}px`,
+          opacity: '1'
+        });
+      }
+    };
 
-  document.onmouseup = e => {
-    if (resizeType === 'col') {
-      const deltaX = e.clientX - coords.right;
-      $parent.css({width: `${coords.width + deltaX}px`});
+    document.onmouseup = e => {
+      document.onmousemove = null;
+      document.onmouseup = null;
 
-      $cells.forEach(cell =>
-        $(cell).css({width: `${coords.width + deltaX}px`}));
+      if (resizeType === 'col') {
+        const deltaX = e.clientX - coords.right;
+        value = coords.width + deltaX;
 
-      $resizer.css({right: null, height: null, opacity: null});
-    } else {
-      const deltaY = e.clientY - coords.bottom;
-      $parent.css({height: `${coords.height + deltaY}px`});
+        $parent.css({width: `${value}px`});
 
-      $resizer.css({bottom: null, width: null, opacity: null});
-    }
+        $cells.forEach(cell =>
+          $(cell).css({width: `${value}px`}));
 
-    document.onmousemove = null;
-    document.onmouseup = null;
-  };
+        $resizer.css({right: null, height: null, opacity: null});
+      } else {
+        const deltaY = e.clientY - coords.bottom;
+        value = coords.height + deltaY;
+        $parent.css({height: `${value}px`});
+
+        $resizer.css({bottom: null, width: null, opacity: null});
+      }
+
+      resolve({type: resizeType, id: $parent.data[resizeType], value});
+    };
+  });
 }
